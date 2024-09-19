@@ -4,7 +4,8 @@ import java.util.*;
 
 /* LeetCode：字符串和数组
  * command + shift + o ：查看当前类的Structure
- * 思路调优题：1.删除有序数组中的重复项II（L104）
+ * 思路调优题：1.删除有序数组中的重复项II（L104） 
+ *           2.多数元素（L169）
  */
 public class TestStringAndArray {
   
@@ -14,7 +15,11 @@ public class TestStringAndArray {
     // merge(new int[]{1, 2, 3, 0, 0, 0}, 3, new int[]{2, 5, 6}, 3);
     // removeElement(new int[]{3, 2, 2, 3}, 3);    
     //removeDuplicates(new int[]{0,0,1,1,1,2,2,3,3,4});
-    removeDuplicatesII(new int[]{0,0,1,1,1,1,2,3,3,4,4,4,4,4,5,5,6,6,6});
+    //removeDuplicatesII(new int[]{0,0,1,1,1,1,2,3,3,4,4,4,4,4,5,5,6,6,6});
+    //int number = majorityElement(new int[]{1,1,1,2,2,2});
+    //majorityElementII(new int[]{2,2,1,1,1});
+    //majorityElementIII(new int[]{2,2,1,1,1});
+    rotate(new int[]{1,2,3,4,5,6,7}, 3);
   } 
 
   //1.合并两个有序数组
@@ -144,4 +149,97 @@ public class TestStringAndArray {
     }
     return slow;
   }
+
+  //5.多数元素
+  /* 题目描述:
+   * 给定一个大小为 n 的数组 nums ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。
+   * 你可以假设数组是非空的，并且给定的数组总是存在多数元素。 时间复杂度On、空间复杂度O1
+   * 输入: [2,2,1,1,1,2,2]
+   * 输出: 2
+   * 思路: 哈希表、排序（众数，类似于中位数）、分治、Boyer-Moore 投票算法
+   */
+  public static int majorityElement(int[] nums) { //哈希表做法
+    if(nums.length == 1)return nums[0];
+    int baseline = nums.length / 2 + nums.length % 2;
+    HashMap<Integer, Integer> hashMap = new HashMap<>();
+    for (int i = 0; i < nums.length; i++) {
+        if (hashMap.containsKey(nums[i])) {
+            int num = hashMap.get(nums[i]);
+            num++;
+            hashMap.put(nums[i], num);
+            if (num >= baseline) {
+                return nums[i];
+            }
+        } else {
+            hashMap.put(nums[i], 1);
+        }
+    }
+    return 0;
+  }
+
+  public static int majorityElementII(int[] nums){ //做法二：分治 
+    int answer = divideAndConquer(nums, 0, nums.length - 1);
+    System.out.println(answer);
+    return answer;
+  }
+  public static int divideAndConquer(int[] nums, int i, int j) { //0 ~ 7[8]   3    0~6[7] 3
+    if(i == j){
+      return nums[i];
+    }
+    int mid = (i + j) / 2;
+    int numA = divideAndConquer(nums, i, mid); //0 1 2 3 //01 23//
+    int numB = divideAndConquer(nums, mid + 1, j);//4 5 6//45 6//4 5 6
+    if(numA == numB) return numA;
+
+    int countA = countNum(nums, i, mid, numA);
+    int countB = countNum(nums, mid + 1, j, numB);
+  
+    if(countA > countB) return numA;
+    else return numB;
+  }
+  public static int countNum(int[] nums, int i, int j, int number) {
+    int count = 0;
+    for(int i1 = i; i1 <= j; i1++) {
+      if(nums[i1] == number) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  public static int majorityElementIII(int[] nums) { //Boyer-Moore 投票算法
+    int candidate = nums[0], count = 0;
+    for(int i = 0; i < nums.length; i++){
+      if(count == 0) candidate = nums[i];
+      count += (nums[i] == candidate)? 1 : -1;
+    }
+    return candidate;
+  }
+
+  //6.翻转数组
+  /* 题目描述:给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
+   * 输入: nums = [1,2,3,4,5,6,7], k = 3
+   * 输出: [5,6,7,1,2,3,4]
+   * 做法: 额外空间（新数组）、翻转（时间On、空间O1）
+   */
+  public static void rotate(int[] nums, int k){
+    int status = k % nums.length;
+    reverseRotate(nums, 0, nums.length - 1);
+    reverseRotate(nums, 0, status - 1);
+    reverseRotate(nums, status, nums.length - 1);
+    for(int num : nums){
+      System.out.print(num + " ");
+    }
+  }
+  public static void reverseRotate(int[] nums, int left, int right){
+    int i = left, j = right;
+    while(i < j){
+      int temp =  nums[i];
+      nums[i] = nums[j];
+      nums[j] = temp;
+      i++;
+      j--;
+    }
+  }
+
 }
