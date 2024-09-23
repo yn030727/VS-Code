@@ -12,6 +12,7 @@ public class TestStringAndArray {
   String url = "https://leetcode.cn/studyplan/top-interview-150/";
 
   public static void main(String[] args) {
+    int num = 
     // merge(new int[]{1, 2, 3, 0, 0, 0}, 3, new int[]{2, 5, 6}, 3);
     // removeElement(new int[]{3, 2, 2, 3}, 3);    
     //removeDuplicates(new int[]{0,0,1,1,1,2,2,3,3,4});
@@ -19,7 +20,11 @@ public class TestStringAndArray {
     //int number = majorityElement(new int[]{1,1,1,2,2,2});
     //majorityElementII(new int[]{2,2,1,1,1});
     //majorityElementIII(new int[]{2,2,1,1,1});
-    rotate(new int[]{1,2,3,4,5,6,7}, 3);
+    //rotate(new int[]{1,2,3,4,5,6,7}, 3);
+    //maxProfit(new int[]{7, 1, 5, 3, 6, 4});
+    maxProfitII(new int[]{7, 1, 5, 3, 6, 4});
+    System.out.println(num);
+    
   } 
 
   //1.合并两个有序数组
@@ -242,4 +247,45 @@ public class TestStringAndArray {
     }
   }
 
+  //7.买卖股票的最佳时机
+  /* 题目描述:给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+   * 你只能选择某一天买入这只股票，并选择在未来的某一个不同的日子卖出该股票。设计一个算法来计算你所能获取的最大利润。
+   * 返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+   * 输入:7,1,5,3,6,4
+   * 输出:5
+   */
+  public static int maxProfit(int[] prices) {
+    int min = prices[0] ,profit = 0;
+    for(int i = 1; i < prices.length; i++) {
+      if(prices[i] < min) {
+        min = prices[i];
+      }
+      if(prices[i] - min > profit) {
+        profit = prices[i] - min;
+      }
+    }
+    return profit;
+  }
+
+  //8.买卖股票的最佳时机II
+  /* 题目描述:给你一个整数数组 prices ，其中 prices[i] 表示某支股票第 i 天的价格。
+   * 在每一天，你可以决定是否购买和/或出售股票。你在任何时候最多只能持有一股股票。你可以购买，然后在同一天出售。
+   * 你也可以先购买，然后在同一天出售。返回 你能获得的最大利润 。
+   * 输入:prices = [7,1,5,3,6,4]     1->5=4 + 3->6=3 = 7
+   * 输出:7
+   */
+  public static int maxProfitII(int[] prices) { //找递增序列,贪心
+    int left = prices[0], right = prices[0], count = 0;
+    for(int i = 1; i < prices.length; i++) {
+      if(prices[i] >= right) {
+        right = prices[i];
+      }else{
+        count += right - left;
+        right = prices[i];
+        left = prices[i];
+      }
+    }
+    count += right - left;
+    return count;
+  }
 }
