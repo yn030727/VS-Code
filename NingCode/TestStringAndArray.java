@@ -1,17 +1,20 @@
 package NingCode;
-
 import java.util.*;
 
 /* LeetCode：字符串和数组
  * command + shift + o ：查看当前类的Structure
+ * command + k + 0 : 折叠函数
+ * command + k + j : 展开函数
  * 思路调优题：1.删除有序数组中的重复项II（L104） 
  *           2.多数元素（L169）
+ *           3.跳跃游戏II（L45）—— 贪心
  */
 public class TestStringAndArray {
   
   String url = "https://leetcode.cn/studyplan/top-interview-150/";
 
   public static void main(String[] args) {
+    int num = 
     // merge(new int[]{1, 2, 3, 0, 0, 0}, 3, new int[]{2, 5, 6}, 3);
     // removeElement(new int[]{3, 2, 2, 3}, 3);    
     //removeDuplicates(new int[]{0,0,1,1,1,2,2,3,3,4});
@@ -19,7 +22,14 @@ public class TestStringAndArray {
     //int number = majorityElement(new int[]{1,1,1,2,2,2});
     //majorityElementII(new int[]{2,2,1,1,1});
     //majorityElementIII(new int[]{2,2,1,1,1});
-    rotate(new int[]{1,2,3,4,5,6,7}, 3);
+    //rotate(new int[]{1,2,3,4,5,6,7}, 3);
+    //maxProfit(new int[]{7, 1, 5, 3, 6, 4});
+    //maxProfitII(new int[]{7, 1, 5, 3, 6, 4});
+    //canJump(new int[]{2, 3, 1, 1, 4});
+    //jump(new int[]{2, 3, 1, 1, 4});
+    jumpII(new int[]{2, 3, 1, 1, 4});
+    System.out.println(num);
+    
   } 
 
   //1.合并两个有序数组
@@ -240,6 +250,114 @@ public class TestStringAndArray {
       i++;
       j--;
     }
+  }
+
+  //7.买卖股票的最佳时机
+  /* 题目描述:给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+   * 你只能选择某一天买入这只股票，并选择在未来的某一个不同的日子卖出该股票。设计一个算法来计算你所能获取的最大利润。
+   * 返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+   * 输入:7,1,5,3,6,4
+   * 输出:5
+   */
+  public static int maxProfit(int[] prices) {
+    int min = prices[0] ,profit = 0;
+    for(int i = 1; i < prices.length; i++) {
+      if(prices[i] < min) {
+        min = prices[i];
+      }
+      if(prices[i] - min > profit) {
+        profit = prices[i] - min;
+      }
+    }
+    return profit;
+  }
+
+  //8.买卖股票的最佳时机II
+  /* 题目描述:给你一个整数数组 prices ，其中 prices[i] 表示某支股票第 i 天的价格。
+   * 在每一天，你可以决定是否购买和/或出售股票。你在任何时候最多只能持有一股股票。你可以购买，然后在同一天出售。
+   * 你也可以先购买，然后在同一天出售。返回 你能获得的最大利润 。
+   * 输入:prices = [7,1,5,3,6,4]     1->5=4 + 3->6=3 = 7
+   * 输出:7
+   */
+  public static int maxProfitII(int[] prices) { //找递增序列,贪心
+    int left = prices[0], right = prices[0], count = 0;
+    for(int i = 1; i < prices.length; i++) {
+      if(prices[i] >= right) {
+        right = prices[i];
+      }else{
+        count += right - left;
+        right = prices[i];
+        left = prices[i];
+      }
+    }
+    count += right - left;
+    return count;
+  }
+
+  //9.跳跃游戏
+  /* 题目描述: 给你一个非负整数数组 nums ，你最初位于数组的 第一个下标 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
+   * 判断你是否能够到达最后一个下标，如果可以，返回 true ；否则，返回 false 。
+   * 输入: [2,3,1,1,4]
+   */
+  // public static boolean canJump(int[] nums) {  递归做会出现超时的情况
+  //   if(nums[0] == 0)return false;
+  //   return doJump(nums, 0);
+  // }
+  // public static boolean doJump(int[] nums , int i) {
+  //   if(nums[i] == 0) return false;
+  //   if(nums[i] + i >= nums.length - 1) return true;
+  //   for(int j = 1; j <= nums[i]; j++){
+  //     if(doJump(nums, i + j)){
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }
+  public static boolean canJump(int[] nums) { //贪心
+    int maxJump = 0;
+    for(int i = 0; i < nums.length; i++) {
+      if(i > maxJump) return false;
+      if(nums[i] + i > maxJump) maxJump = nums[i] + i;
+      if(maxJump >= nums.length - 1) return true;
+    }
+    return false;
+  }
+
+  //10.跳跃游戏II
+  /* 题目描述: 给定一个长度为 n 的 0 索引整数数组 nums。初始位置为 nums[0]。
+   * 每个元素 nums[i] 表示从索引 i 向前跳转的最大长度。换句话说，如果你在 nums[i] 处，你可以跳转到任意 nums[i + j] 处:
+   * 返回到达 nums[n - 1] 的最小跳跃次数。生成的测试用例可以到达 nums[n - 1]。
+   * 输入:  nums = [2,3,1,1,4] 
+   *          3  4  5  6  7  8  9  10 11
+   * 2  3  1  1  4  3  7  3  4  1  1  1
+   * 2  4  3  4  8  8  13 10 12 10 11  
+   */
+  public static int jump(int[] nums) {
+    int[] dp = new int[nums.length]; //动态规划: 到达当前位置的最小跳跃次数 dp[i]
+    Arrays.fill(dp, Integer.MAX_VALUE);
+    dp[0] = 0;
+    for(int i = 0; i < nums.length; i++) {
+      for(int j = 0; j <= nums[i]; j++) {
+        if(i + j > nums.length - 1) {
+          dp[nums.length - 1] = Math.min(dp[nums.length - 1], dp[i] + 1);
+        }else {
+          dp[i + j] = Math.min(dp[i + j], dp[i] + 1);
+        }
+      }
+    }
+    return dp[nums.length - 1];
+  }
+  //1.贪心: 如果我们贪心地进行正向查找，每次找到可到达的最远位置，就可以在线性时间内得到最少的提跳跃次数。
+  public static int jumpII(int[] nums) {
+    int end = 0, maxPosition = 0, step = 0;
+    for(int i = 0; i < nums.length - 1; i++) {
+      maxPosition = Math.max(maxPosition, nums[i] + i);
+      if(i == end) {
+        end = maxPosition; //到达end，说明是上一跳能到达的最远位置，所以接下来是下一跳的范围，就会step++
+        step++;
+      }
+    }
+    return step;
   }
 
 }
